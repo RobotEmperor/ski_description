@@ -1,0 +1,759 @@
+<?xml version="1.0"?>
+<!-- Revolute-Revolute Manipulator -->
+<robot name="ski_simulation_test" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="pi" value="3.141592654" />
+   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
+  <xacro:include filename="$(find ski_simulation_pkg)/urdf/ski_gazebo.gazebo" />
+
+  <xacro:include filename="$(find ski_simulation_pkg)/urdf/materials.xacro" />
+
+  <!-- Used for fixing robot -->
+ 
+
+  <link name="pelvis">
+
+   <collision>
+      <origin xyz="0 0 0.7" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+        <origin xyz="0 0 0.7" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_pelvis_main.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+ <joint name="imu_fixed" type="fixed">
+    <parent link="pelvis"/>
+    <child link="imu_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="imu_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+  </link>
+
+<!-- chest -->
+
+<joint name="waist_fixed_joint" type="fixed">
+    <parent link="pelvis"/>
+    <child link="waist_fixed_link"/>
+    <origin xyz="0 0 0.7" rpy="0 0 0"/>
+   </joint>
+
+<link name="waist_fixed_link">
+
+     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_chest_1.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+   </link>
+
+<joint name="waist_roll_joint" type="revolute">
+    <parent link="waist_fixed_link"/>
+    <child link="waist_roll_link"/>
+    <origin xyz="0 0 0.19" rpy="0 0 0"/>
+    <axis xyz="-1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+<transmission name="tran0">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="waist_roll_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="waist_roll_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+<link name="waist_roll_link">
+   <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_chest_2.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+   </link>
+
+
+
+
+
+<!-- left leg -->
+
+  <joint name="l_hip_pitch_joint" type="revolute">
+    <parent link="pelvis"/>
+    <child link="l_hip_pitch_link"/>
+    <origin xyz="0 0.105 0.7" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+
+  <transmission name="l_hip_pitch_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="l_hip_pitch_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="l_hip_pitch_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+
+  <link name="l_hip_pitch_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_pelvis_left1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+   <joint name="l_hip_roll_joint" type="revolute">
+    <parent link="l_hip_pitch_link"/>
+    <child link="l_hip_roll_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="l_hip_roll_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="l_hip_roll_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="l_hip_roll_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+
+
+  <link name="l_hip_roll_link">
+
+     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_pelvis_left2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+  <joint name="l_hip_yaw_joint" type="revolute">
+    <parent link="l_hip_roll_link"/>
+    <child link="l_hip_yaw_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="l_hip_yaw_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="l_hip_yaw_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="l_hip_yaw_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+  <link name="l_hip_yaw_link">
+   <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_leg_left1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+  <joint name="l_knee_pitch_joint" type="revolute">
+    <parent link="l_hip_yaw_link"/>
+    <child link="l_knee_pitch_link"/>
+    <origin xyz="0 0 -0.225" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="l_knee_pitch_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="l_knee_pitch_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="l_knee_pitch_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+
+  <link name="l_knee_pitch_link">
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_leg_left2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 -0.225" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+  <joint name="l_ankle_pitch_joint" type="revolute">
+    <parent link="l_knee_pitch_link"/>
+    <child link="l_ankle_pitch_link"/>
+    <origin xyz="0 0 -0.235" rpy="0 0 0"/>
+    <axis xyz="0 -1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="l_ankle_pitch_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="l_ankle_pitch_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="l_ankle_pitch_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+  <link name="l_ankle_pitch_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_ank_left1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+  <joint name="l_ankle_roll_joint" type="revolute">
+    <parent link="l_ankle_pitch_link"/>
+    <child link="l_ankle_roll_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="l_ankle_roll_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="l_ankle_roll_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="l_ankle_roll_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+  <link name="l_ankle_roll_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_ank_left2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+  </link>
+
+  <joint name="l_last_joint" type="fixed">
+    <parent link="l_ankle_roll_link"/>
+    <child link="l_ski_link"/>
+    <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+    
+  </joint>
+
+<link name="l_ski_link">
+    <collision>
+      <origin xyz="0 0 -0.005" rpy="0 0 0"/>
+      <geometry>
+        <box size="1.24 0.065 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_ski.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+  </link>
+
+<!-- right leg -->
+
+<joint name="r_hip_pitch_joint" type="revolute">
+    <parent link="pelvis"/>
+    <child link="r_hip_pitch_link"/>
+    <origin xyz="0 -0.105 0.7" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+   <transmission name="r_hip_pitch_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="r_hip_pitch_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="r_hip_pitch_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+  </transmission>
+
+
+ <link name="r_hip_pitch_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_pelvis_right1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+</link>
+
+<!-- - - - - - - - - - - - - - - - - - - - -->
+
+  <joint name="r_hip_roll_joint" type="revolute">
+    <parent link="r_hip_pitch_link"/>
+    <child link="r_hip_roll_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="r_hip_roll_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="r_hip_roll_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="r_hip_roll_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+   </transmission>
+
+
+  <link name="r_hip_roll_link">
+
+<collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_pelvis_right2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="green"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+<!-- - - - - - - - - - - - - - - - - - - - -->
+
+  <joint name="r_hip_yaw_joint" type="revolute">
+    <parent link="r_hip_roll_link"/>
+    <child link="r_hip_yaw_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="r_hip_yaw_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="r_hip_yaw_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="r_hip_yaw_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+  </transmission>
+
+
+  <link name="r_hip_yaw_link">
+   <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_leg_right1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+
+
+<!-- - - - - - - - - - - - - - - - - - - - -->
+
+  <joint name="r_knee_pitch_joint" type="revolute">
+    <parent link="r_hip_yaw_link"/>
+    <child link="r_knee_pitch_link"/>
+    <origin xyz="0 0 -0.225" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="r_knee_pitch_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="r_knee_pitch_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="r_knee_pitch_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+  </transmission>
+
+
+  <link name="r_knee_pitch_link">
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_leg_right2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 -0.225" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+<!-- - - - - - - - - - - - - - - - - - - - -->
+
+  <joint name="r_ankle_pitch_joint" type="revolute">
+    <parent link="r_knee_pitch_link"/>
+    <child link="r_ankle_pitch_link"/>
+    <origin xyz="0 0 -0.235" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+ <transmission name="r_ankle_pitch_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="r_ankle_pitch_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="r_ankle_pitch_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+  </transmission>
+
+
+  <link name="r_ankle_pitch_link">
+
+  <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_ank_right1.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 -0.235" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+<!-- - - - - - - - - - - - - - - - - - - - -->
+
+  <joint name="r_ankle_roll_joint" type="revolute">
+    <parent link="r_ankle_pitch_link"/>
+    <child link="r_ankle_roll_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit velocity="6.5" effort="1000" lower="${-pi/2}" upper="${pi/2}" />
+    <dynamics damping = "0.7"/>
+   </joint>
+
+   <transmission name="r_ankle_roll_tran">
+     <type>transmission_interface/SimpleTransmission</type>
+     <joint name="r_ankle_roll_joint">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+     </joint>
+     <actuator name="r_ankle_roll_motor">
+       <hardwareInterface>EffortJointInterface</hardwareInterface>
+       <mechanicalReduction>1</mechanicalReduction>
+     </actuator>
+  </transmission>
+
+
+  <link name="r_ankle_roll_link">
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_ank_right2.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+
+  </link>
+
+  <joint name="r_last_joint" type="fixed">
+    <parent link="r_ankle_roll_link"/>
+    <child link="r_ski_link"/>
+    <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+  </joint>
+
+
+<link name="r_ski_link">
+
+  <collision>
+      <origin xyz="0 0 -0.005" rpy="0 0 0"/>
+      <geometry>
+        <box size="1.24 0.065 0.01" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://ski_simulation_pkg/meshes/stl_robot_ski.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="brown"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>      
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />      
+    </inertial>
+  </link>
+
+
+
+</robot>
+
+
+
